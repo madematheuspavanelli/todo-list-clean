@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,9 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2 } from "lucide-vue-next";
+import { AxiosAdapter } from "@/infra/AxiosAdapter";
+
+const httpAdapter = inject("httpClient");
 
 const todos = ref([]);
 const description = ref("");
@@ -29,22 +32,22 @@ async function addTodo() {
   };
   todos.value.push(newTodo);
   description.value = "";
-  await axios.post("http://localhost:3333/todos", newTodo);
+  await axios.httpAdapter("http://localhost:3333/todos", newTodo);
 }
 async function removeItem(item) {
   todos.value.splice(
     todos.value.findIndex((todo) => todo === item),
     1,
   );
-  await axios.delete(`http://localhost:3333/todos/${item.id}`);
+  await httpAdapter.delete(`http://localhost:3333/todos/${item.id}`);
 }
 async function toggleItem(todo) {
   todo.done = !todo.done;
-  await axios.put(`http://localhost:3333/todos/${todo.id}`, todo);
+  await httpAdapter.put(`http://localhost:3333/todos/${todo.id}`, todo);
 }
 onMounted(async () => {
-  const response = await axios.get("http://localhost:3333/todos");
-  todos.value = response.data;
+  const response = await httpAdapter.get("http://localhost:3333/todos");
+  todos.value = response;
 });
 
 const completed = computed(() => {

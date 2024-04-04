@@ -7,7 +7,7 @@ export class AxiosAdapter implements HTTPClient {
     return response.data;
   }
   async post(url: string, body: any): Promise<any> {
-    const response = await axios.get(url, body);
+    const response = await axios.post(url, body);
     return response.data;
   }
   async put(url: string, body: any): Promise<any> {
